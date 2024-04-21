@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func main() {
 	fmt.Println("Web request Verbs in Golang")
-    PerformGetRequest()
+	// PerformGetRequest()
+	PerformPostJsonRequest()
 
 }
 
@@ -27,6 +29,27 @@ func PerformGetRequest() {
 	fmt.Println(string(content))
 
 	defer response.Body.Close()
+
+}
+
+func PerformPostJsonRequest() {
+	const myURL = "http://localhost:3000/post"
+
+	requestBody := strings.NewReader(`
+	{
+		"coursename":"Let's go with golang",
+		"price":0,
+		"platform":"CodeWithYatendra"
+	}
+	`)
+	response, err := http.Post(myURL, "application/json", requestBody)
+	if err != nil {
+		panic(err)
+	}
+	defer response.Body.Close()
+
+	content, _ := ioutil.ReadAll(response.Body)
+	fmt.Println(string(content))
 
 }
 
