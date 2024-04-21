@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
 func main() {
 	fmt.Println("Web request Verbs in Golang")
 	// PerformGetRequest()
-	PerformPostJsonRequest()
+	// PerformPostJsonRequest()
+	PerformPostFormRequest()
 
 }
 
@@ -51,6 +53,24 @@ func PerformPostJsonRequest() {
 	content, _ := ioutil.ReadAll(response.Body)
 	fmt.Println(string(content))
 
+}
+
+func PerformPostFormRequest() {
+	myURL := "http://localhost:3000/postform"
+
+	data := url.Values{}
+	data.Add("firstname", "yatendra")
+	data.Add("lastname", "singh")
+	data.Add("email", "yatendra@gmail.com")
+
+	response, err := http.PostForm(myURL, data)
+	if err != nil {
+		panic(err)
+	}
+	defer response.Body.Close()
+
+	content, _ := ioutil.ReadAll(response.Body)
+	fmt.Println("Response", content)
 }
 
 /*
