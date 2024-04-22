@@ -15,7 +15,8 @@ type course struct {
 
 func main() {
 	fmt.Println("Welcome to the Journey for the json data in the Golang")
-	EncodeJson()
+	// EncodeJson()
+	DecodeJson()
 }
 
 func EncodeJson() {
@@ -35,6 +36,37 @@ func EncodeJson() {
 		panic(err)
 	}
 	fmt.Printf("%s\n", finalJson)
+}
+
+func DecodeJson() {
+	jsonDataFromWeb := []byte(`
+	{
+		"coursename": "Ember.js",
+		"Price": 179,
+		"website": "emberdev",
+		"tags": ["web dev","javascript"]
+    }
+`)
+
+	var lcoCourse course
+	checkValid := json.Valid(jsonDataFromWeb)
+	if checkValid {
+		fmt.Println("JOSN was Valid")
+		json.Unmarshal(jsonDataFromWeb, &lcoCourse)
+		fmt.Printf("%#v\n", lcoCourse)
+	} else {
+		fmt.Println("JSON Validation failed")
+	}
+
+	// Some Cases where you just want to add data to key value pair
+	var myOnlineData map[string]interface{}
+	json.Unmarshal(jsonDataFromWeb, &myOnlineData)
+	fmt.Printf("%#v\n", myOnlineData)
+
+	for k, v := range myOnlineData {
+		fmt.Printf("Key is %v Value is %v and Type is %T \n", k, v, v)
+	}
+
 }
 
 /*Notes
