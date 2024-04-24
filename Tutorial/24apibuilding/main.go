@@ -43,8 +43,26 @@ func serverHome(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("<h1>Welcome To APIs by Yatendra Singh Learning Golang</h1>"))
 }
 
-func getAllCourses(w http.ResponseWriter,r *http.Request){
+func getAllCourses(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Get All Courses")
-	w.Header().Set("Content-Type","application/json")
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(courses)
+}
+
+func getCourseById(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get One Course")
+	w.Header().Set("Content-Type", "application/json")
+
+	//grab id from the request
+	params := mux.Vars(r)
+
+	// loop through the courses, find matching id and return the response
+	for _, course := range courses {
+		if course.CourseId == params["id"] {
+			json.NewEncoder(w).Encode(course)
+			return
+		}
+	}
+	json.NewEncoder(w).Encode("No course found with the given id")
+	return
 }
