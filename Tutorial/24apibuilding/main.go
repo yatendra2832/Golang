@@ -46,12 +46,17 @@ func serverHome(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("<h1>Welcome To APIs by Yatendra Singh Learning Golang</h1>"))
 }
 
+// This function handles the request to retrieve all courses. It sets the response content type to JSON, encodes the courses slice into JSON format, and sends the response.
 func getAllCourses(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Get All Courses")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(courses)
 }
 
+/*
+Notes
+This function handles the request to retrieve a single course by its ID. It extracts the ID from the request parameters, then iterates through the courses slice to find the course with the matching ID. If found, it encodes the course into JSON and sends the response. If not found, it responds with a message indicating that no course was found with the given ID.
+*/
 func getCourseById(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Get One Course")
 	w.Header().Set("Content-Type", "application/json")
@@ -70,6 +75,10 @@ func getCourseById(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+/*
+Notes
+This function handles the request to create a new course. It first checks if the request body is empty. Then, it decodes the request body into a Course struct. If the decoded course is empty, it responds with a message indicating that there is no data inside the JSON. Otherwise, it generates a unique ID for the course, appends it to the courses slice, and responds with the created course in JSON format.
+*/
 func createOneCourse(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Create One Course")
 	w.Header().Set("Content-Type", "application/json")
@@ -78,20 +87,52 @@ func createOneCourse(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("Please Send some data")
 	}
 
-	// hanling {}
+	// Decode the request body into a Course struct
 	var course Course
 	_ = json.NewDecoder(r.Body).Decode(&course)
+
+	// Check if the decoded course is empty
 	if course.isEmpty() {
 		json.NewEncoder(w).Encode("No Data inside the json")
 		return
 	}
 
-	// generate a unique id , string
-	// append course into courses
-
+	// Generate a unique ID and append the course to the courses slice
 	rand.Seed(time.Now().UnixNano())
 	course.CourseId = strconv.Itoa(rand.Intn(100))
 	courses = append(courses, course)
 	json.NewEncoder(w).Encode(course)
 	return
+}
+
+/*
+	Notes
+
+This function handles the request to update an existing course. It first extracts the ID from the request parameters. Then, it iterates through the courses slice to find the course with the matching ID. If found, it removes the old course, decodes the request body into a new Course struct, updates the ID of the updated course, appends the updated course to the courses slice, and responds with a success message. If no course with the given ID is found, it responds with a "Course not found" error message.
+*/
+func updateOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Update the Course")
+	w.Header().Set("Content-Type", "application/json")
+
+	// first - grab id from request
+	params := mux.Vars(r)
+	// Loop through the courses, find the matching ID, and update the course
+	for index, course := range courses {
+		if course.CourseId == params["id"] {
+			// Remove the old course
+			courses = append(courses[:index], courses[index+1:]...)
+
+			// Decode the request body into a new Course struct
+			var course Course
+			_ = json.NewDecoder(r.Body).Decode(course)
+
+			// Set the ID of the updated course
+			course.CourseId = params["id"]
+			// Append the updated course to the courses slice
+			courses = append(courses, course)
+			json.NewEncoder(w).Encode("Course Updated Successfully")
+			return
+		}
+	}
+
 }
