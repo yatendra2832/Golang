@@ -34,7 +34,17 @@ func (c *Course) isEmpty() bool {
 func main() {
 	fmt.Println("Building APIs ...")
 	r := mux.NewRouter()
+	// Routing
 	r.HandleFunc("/", serverHome).Methods("GET")
+	r.HandleFunc("/courses", getAllCourses).Methods("GET")
+	r.HandleFunc("/courses/:id", getCourseById).Methods("GET")
+	r.HandleFunc("/courses", createOneCourse).Methods("POST")
+	r.HandleFunc("courses/:id", updateOneCourse).Methods("PUT")
+	r.HandleFunc("/courses/:id", deleteOneCourse).Methods("DELETE")
+	// seeding
+	courses = append(courses, Course{CourseId: "2", CourseName: "Reactjs", CoursePrice: 399, Author: &Author{Fullname: "Yatendra singh", Website: "codewithyatendra.com"}})
+
+	// listen to port
 	log.Fatal(http.ListenAndServe(":3000", r))
 
 }
