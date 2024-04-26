@@ -111,29 +111,43 @@ func getAllMovies() []primitive.M {
 	return movies
 }
 
-func GetMyAllMovies(w http.ResponseWriter,r *http.Request)  {
-	w.Header().Set("Content-Type","application/json")
-	allMovies:= getAllMovies()
+func GetMyAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	allMovies := getAllMovies()
 	json.NewEncoder(w).Encode(allMovies)
 
 }
 
-func CreateMovies(w http.ResponseWriter,r *http.Request){
-	w.Header().Set("Content-Type","application/json")
-	w.Header().Set("Allow Control-Allow-Methods","POST")
+func CreateMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow Control-Allow-Methods", "POST")
 
-	var movie model.Netflix 
+	var movie model.Netflix
 	_ = json.NewDecoder(r.Body).Decode(&movie)
 	insertOneMovie(movie)
 	json.NewEncoder(w).Encode(movie)
 
-
 }
-func MarkAsWatched(w http.ResponseWriter,r *http.Request)  {
-	w.Header().Set("Content-Type","application/json")
-	w.Header().Set("Allow Control-Allow-Methods","POST")
+func MarkAsWatched(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow Control-Allow-Methods", "PUT")
 
-	params:= mux.Vars(r)
+	params := mux.Vars(r)
 	updateOneMovie(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
+}
+
+func DeleteOneMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow Control-Allow-Methods", "DELETE")
+
+	params := mux.Vars(r)
+	deleteOneMovie(params["id"])
+	json.NewEncoder(w).Encode(params["id"])
+}
+func DeleteAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow Control-Allow-Methods", "DELETE")
+	count := deleteAllMovie()
+	json.NewEncoder(w).Encode(count)
 }
