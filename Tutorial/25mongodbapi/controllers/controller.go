@@ -2,9 +2,12 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
+	"github.com/gorilla/mux"
 	model "github.com/yatendrayadav2832/mongoapi/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -106,4 +109,31 @@ func getAllMovies() []primitive.M {
 
 	// Return the slice of movies
 	return movies
+}
+
+func GetMyAllMovies(w http.ResponseWriter,r *http.Request)  {
+	w.Header().Set("Content-Type","application/json")
+	allMovies:= getAllMovies()
+	json.NewEncoder(w).Encode(allMovies)
+
+}
+
+func CreateMovies(w http.ResponseWriter,r *http.Request){
+	w.Header().Set("Content-Type","application/json")
+	w.Header().Set("Allow Control-Allow-Methods","POST")
+
+	var movie model.Netflix 
+	_ = json.NewDecoder(r.Body).Decode(&movie)
+	insertOneMovie(movie)
+	json.NewEncoder(w).Encode(movie)
+
+
+}
+func MarkAsWatched(w http.ResponseWriter,r *http.Request)  {
+	w.Header().Set("Content-Type","application/json")
+	w.Header().Set("Allow Control-Allow-Methods","POST")
+
+	params:= mux.Vars(r)
+	updateOneMovie(params["id"])
+	json.NewEncoder(w).Encode(params["id"])
 }
